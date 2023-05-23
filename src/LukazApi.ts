@@ -4,7 +4,7 @@ import axios, {
   AxiosResponse,
   isAxiosError,
 } from 'axios';
-import { askBody, updateWorkspace } from './types';
+import { AskBody, UpdateWorkspace, UpdateQuestion } from './types';
 
 export class Lukaz {
   private client: AxiosInstance;
@@ -42,8 +42,10 @@ export class Lukaz {
       return res.data;
     } catch (error: any) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
         return error.status;
       } else {
         console.error(error.status);
@@ -55,12 +57,12 @@ export class Lukaz {
   /**
    * Send a question into Lukaz
    * @param {String} workspaceId - Your workspace ID as a string.
-   * @param {askBody} body - An object containing the question and translation preferences.
+   * @param {AskBody} body - An object containing the question and translation preferences.
    * @example example of body = {question: 'What is this workspace about?', translateAnswer: false}
    * @returns {Promise<AxiosResponse>} An object
    * @see {@link https://docs.lukaz.ai/?javascript#ask-question-to-workspace}
    */
-  async ask(workspaceId: string, body: askBody): Promise<any> {
+  async ask(workspaceId: string, body: AskBody): Promise<any> {
     try {
       const res: AxiosResponse = await this.client.post(
         `/ask/${workspaceId}`,
@@ -69,8 +71,10 @@ export class Lukaz {
       return res.data;
     } catch (error: any) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
         return error.status;
       } else {
         console.error(error.status);
@@ -90,8 +94,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -109,8 +115,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -131,8 +139,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -166,8 +176,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -177,7 +189,7 @@ export class Lukaz {
   /**
    * Update configuration of a workspace
    * @param {String} workspace workspace id as string
-   * @param {updateWorkspace} body An object with Description, Options and Roles
+   * @param {UpdateWorkspace} body An object with Description, Options and Roles
    * @example body: { 
    * description: 'Description of my AI workspace.',
     options: {
@@ -193,7 +205,7 @@ export class Lukaz {
    * @returns true
    * @see {@link https://docs.lukaz.ai/?javascript#update-workspace}
    */
-  async updateWorkspace(workspace: string, body: updateWorkspace) {
+  async updateWorkspace(workspace: string, body: UpdateWorkspace) {
     try {
       const res: AxiosResponse = await this.client.put(
         `/updateWorkspace/${workspace}`,
@@ -202,8 +214,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -224,8 +238,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -248,8 +264,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -273,8 +291,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -299,8 +319,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -322,8 +344,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -344,8 +368,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -368,8 +394,8 @@ export class Lukaz {
   "visible": true,
   "workspaceId": "<WORKSPACE_ID>"
 }
-   * @see {@link https://docs.lukaz.ai/?javascript#get-question}
-   */
+* @see {@link https://docs.lukaz.ai/?javascript#get-question}
+*/
   async getQuestion(questionId: string) {
     try {
       const res: AxiosResponse = await this.client.get(
@@ -378,8 +404,10 @@ export class Lukaz {
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
@@ -387,112 +415,25 @@ export class Lukaz {
   }
 
   /**
-   * Makes a question visible on its workspace.
-   * @param questionId The ID of the question to make visible
+   * Update a specific question
+   * @param questionId question id as string
+   * @param body an object with question and answer properties
+   * @example example of body {feedback: 1, saved: false, visible: true}
    * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#show-question-on-workspace}
    */
-  async showQuestion(questionId: string) {
+  async updateQuestion(questionId: string, body: UpdateQuestion) {
     try {
       const res: AxiosResponse = await this.client.put(
-        `/showQuestion/${questionId}`
-      );
-      return res.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  /**
-   * Makes a question invisible on its workspace.
-   * @param questionId The ID of the question to make invisible
-   * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#hide-question-from-workspace}
-   */
-  async hideQuestion(questionId: string) {
-    try {
-      const res: AxiosResponse = await this.client.put(
-        `/hideQuestion/${questionId}`
-      );
-      return res.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  /**
-   * Saves a question on user's favourites.
-   * @param questionId  The ID of the question to save
-   * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#save-question-to-favourites}
-   */
-  async saveQuestion(questionId: string) {
-    try {
-      const res: AxiosResponse = await this.client.put(
-        `/saveQuestion/${questionId}`
-      );
-      return res.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  /**
-   * Removes a question from user's favourites.
-   * @param questionId The ID of the question to remove
-   * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#remove-question-from-favourites}
-   */
-  async removeQuestion(questionId: string) {
-    try {
-      const res: AxiosResponse = await this.client.put(
-        `/removeQuestion/${questionId}`
-      );
-      return res.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  /**
-   * Rates the answer of question.
-   * @param questionId The ID of the question to rate
-   * @param body
-   * @example example of body { feedback: 1 }
-   * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#rate-answer}
-   */
-  async rateAnswer(questionId: string, body: { feedback: number }) {
-    try {
-      const res: AxiosResponse = await this.client.put(
-        `/rateAnswer/${questionId}`,
+        `/updateQuestion/${questionId}`,
         body
       );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
-        console.log(error.status);
-        console.error(error.response);
+        console.error(
+          // @ts-ignore
+          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
       } else {
         console.error(error);
       }
