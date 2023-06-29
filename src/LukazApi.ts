@@ -4,7 +4,14 @@ import axios, {
   AxiosResponse,
   isAxiosError,
 } from 'axios';
-import { AskBody, UpdateWorkspace, UpdateQuestion } from './types';
+import {
+  CreateBoard,
+  CreateInstruction,
+  PromptBody,
+  Transcript,
+  UpdateBoard,
+  UpdatePrompt,
+} from './types';
 
 export class Lukaz {
   private client: AxiosInstance;
@@ -30,12 +37,16 @@ export class Lukaz {
     }
   }
 
+  // AUTH Guest Session for Landing Page
+
   /**
    * Create a Guest Account for a new user
    * @returns
    * @example
    * { sessionId: 'Id_for_the_user' }
    */
+
+  // done
   async createGuest() {
     try {
       const res: AxiosResponse = await this.client.post(`/startSession/`);
@@ -43,60 +54,42 @@ export class Lukaz {
     } catch (error: any) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
-        return error.status;
+        return {
+          error: error.response?.status,
+          errorText: error.response?.statusText,
+        };
       } else {
         console.error(error.status);
-        return error.status;
       }
     }
   }
 
-  /**
-   * Send a question into Lukaz
-   * @param {String} workspaceId - Your workspace ID as a string.
-   * @param {AskBody} body - An object containing the question and translation preferences.
-   * @example example of body = {question: 'What is this workspace about?', translateAnswer: false}
-   * @returns {Promise<AxiosResponse>} An object
-   * @see {@link https://docs.lukaz.ai/?javascript#ask-question-to-workspace}
-   */
-  async ask(workspaceId: string, body: AskBody): Promise<any> {
-    try {
-      const res: AxiosResponse = await this.client.post(
-        `/ask/${workspaceId}`,
-        body
-      );
-      return res.data;
-    } catch (error: any) {
-      if (isAxiosError(error)) {
-        console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
-        );
-        return error.status;
-      } else {
-        console.error(error.status);
-        return error.status;
-      }
-    }
-  }
+  // AUTH
 
   /**
    * Authenticate User
    * @returns an object
+   * @example return
+   * {
+   * "displayName": "Example User",
+   * "email": "user@example.com",
+   * "photoURL": "https://example.com/Photo_File.jpg",
+   * "quota": { "prompts": 1000, "boards": 10 },
+   * "savedPrompts": ["<ID>", "<ID>"],
+   * "usage": {"prompts": 834,"boards": 7 }
+   * }
    * @see {@link https://docs.lukaz.ai/?javascript#get-authenticated-user}
    */
   async getUser() {
     try {
-      const res: AxiosResponse = await this.client.get(`/getUser/`);
+      const res: AxiosResponse = await this.client.post(`/getUser/`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -104,20 +97,34 @@ export class Lukaz {
     }
   }
 
+  // BOARDS
+
   /**
-   * Retrieves all the workspaces from a user
-   * @returns an object
-   * @see {@link https://docs.lukaz.ai/?javascript#get-all-workspaces}
+   * Retrieves all boards that the authenticated user owns or has access to
+   * @returns The array of retrieved boards
+   * @example return
+   *[{
+   *     "createdAt": "2023-01-31T18:10:54.376Z",
+   *     "description": "My custom AI board.",
+   *     "documents": [{ "createdAt": "2023-01-31T18:10:54.376Z", "extension": "pdf", "name": "Text_File.pdf", "processed": true, "url": "https://example.com/Text_File.pdf" }],
+   *     "id": "<BOARD_ID>",
+   *     "ownerEmail": "owner@example.com",
+   *     "options": { "prompt": true, "docs": false, "free": false, "public": false, "upload": true },
+   *     "roles": { "owner@example.com": 5, "user@example.com": 4 },
+   *     "stats": { "docs": 2, "prompts": 7, "results": 5},
+   *     "updatedAt": "2023-01-31T18:10:54.376Z"
+   *   }]
+   * @see {@link https://docs.lukaz.ai/#get-all-boards}
    */
-  async getWorkspaces() {
+  // done
+  async getBoards() {
     try {
-      const res: AxiosResponse = await this.client.post(`/getWorkspaces/`);
+      const res: AxiosResponse = await this.client.get(`/board/`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -126,22 +133,32 @@ export class Lukaz {
   }
 
   /**
-   * Retrieves a specific workspace
-   * @param workspace the workspace id as string
+   * Retrieves a specific board
+   * @param board the board id as string
    * @returns an object
-   * @see {@link https://docs.lukaz.ai/?javascript#get-workspace}
+   * @example return
+   * {
+   * "createdAt": "2023-01-31T18:10:54.376Z",
+   * "description": "My custom AI board.",
+   * "documents": [{ "createdAt": "2023-01-31T18:10:54.376Z", "extension": "pdf", "name": "Text_File.pdf", "processed": true, "url": "https://example.com/Text_File.pdf" }],
+   * "id": "<BOARD_ID>",
+   * "ownerEmail": "owner@example.com",
+   * "options": { "docs": false, "free": false, "prompt": true, "public": false, "upload": true },
+   * "roles": { "owner@example.com": 5, "user@example.com": 4 },
+   * "stats": { "docs": 2, "prompts": 7, "results": 5 },
+   * "updatedAt": "2023-01-31T18:10:54.376Z"
+   *}
+   * @see {@link https://docs.lukaz.ai/#get-board}
    */
-  async getWorkspace(workspace: string) {
+  // done
+  async getBoard(boardId: string) {
     try {
-      const res: AxiosResponse = await this.client.post(
-        `/getWorkspace/${workspace}`
-      );
+      const res: AxiosResponse = await this.client.get(`/board/${boardId}`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -150,35 +167,66 @@ export class Lukaz {
   }
 
   /**
-   * Create a new workspace
-   * @param workspace workspace id as string
+   * Create a new board, A board is basically a collection of prompts, their results and documents uploaded as context. It can be shared with other users or made publicly available.
+   * @param body an object
+   * @example of body
+   * {
+   * description: 'My custom AI board.',
+   * title: 'My AI board',
+   * options: { docs: false, free: false, prompt: true, public: false, upload: true }
+   * }
    * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#create-new-workspace}
+   * @see {@link https://docs.lukaz.ai/#create-new-board}
    */
-  async workspace(
-    workspace: string,
-    body?: {
-      description?: string;
-      options?: {
-        ask?: boolean;
-        docs?: boolean;
-        free?: boolean;
-        public?: boolean;
-        upload?: boolean;
-      };
+  // done
+  async createBoard(body: CreateBoard) {
+    try {
+      const res: AxiosResponse = await this.client.post(`/board/`, body);
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
     }
-  ) {
+  }
+
+  /**
+   * Update configuration of a board
+   * @param boardId board id as string
+   * @param body An object with Description, Options and Roles
+   * @example body: {
+   * description: 'My custom AI board.',
+   * notify: true,
+   * options: {
+   *     docs: true,
+   *     free: false,
+   *     public: false,
+   *     prompt: true,
+   *     upload: true
+   * },
+   * roles: {
+   *     'user@example.com': 2
+   * }
+   *}
+   * @returns true
+   * @see {@link https://docs.lukaz.ai/#update-board}
+   */
+  // done
+  async updateBoard(boardId: string, body: UpdateBoard) {
     try {
       const res: AxiosResponse = await this.client.post(
-        `/createWorkspace/${workspace}`,
+        `/board/${boardId}`,
         body
       );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -187,36 +235,22 @@ export class Lukaz {
   }
 
   /**
-   * Update configuration of a workspace
-   * @param {String} workspace workspace id as string
-   * @param {UpdateWorkspace} body An object with Description, Options and Roles
-   * @example body: { 
-   * description: 'Description of my AI workspace.',
-    options: {
-        ask: true,
-        free: false,
-        public: false,
-        upload: true
-    },
-    roles: {
-        'owner@ex.com': 5,
-        'user@ex.com': 4
-    }
+   * Delete a specific board
+   * @param boardId board id as string
    * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#update-workspace}
+   * @see {@link https://docs.lukaz.ai/#delete-board}
    */
-  async updateWorkspace(workspace: string, body: UpdateWorkspace) {
+  // done
+  async deleteBoard(boardId: string) {
     try {
-      const res: AxiosResponse = await this.client.put(
-        `/updateWorkspace/${workspace}`,
-        body
-      );
+      const res: AxiosResponse = await this.client.post(`/board/${boardId}`, {
+        deleted: true,
+      });
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -225,48 +259,24 @@ export class Lukaz {
   }
 
   /**
-   * Delete a specific workspace
-   * @param workspace workspace id as string
+   * Upload a file onto chosen board
+   * @param boardId board id as string
+   * @param data file
    * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#delete-workspace}
+   * @see {@link https://docs.lukaz.ai/#upload-file-onto-board}
    */
-  async deleteWorkspace(workspace: string) {
+  // check   NOT WORKING YET
+  async uploadFile(boardId: string, data: any) {
     try {
       const res: AxiosResponse = await this.client.post(
-        `/deleteWorkspace/${workspace}`
-      );
-      return res.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
-        );
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  /**
-   * Upload a file onto chosen workspace
-   * @param {String} workspace workspace id as string
-   * @param {any} data
-   * @returns true
-   * @see {@link https://docs.lukaz.ai/?javascript#upload-file-onto-workspace}
-   */
-  async upload(workspace: string, data: any) {
-    try {
-      const res: AxiosResponse = await this.client.post(
-        `/upload/${workspace}`,
+        `/file/${boardId}`,
         data
       );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -276,77 +286,122 @@ export class Lukaz {
 
   /**
    *
-   * @param {String} workspace workspace id as string
-   * @param {Object} body an object with fileName key, and it's value as string
-   * @example example of body = { fileName: "my-first-workspace-xxxx" }
-   * @see {@link https://docs.lukaz.ai/?javascript#delete-file-from-workspace}
+   * @param boardId board id as string
+   * @param body an object with fileName key, and it's value as string
+   * @example { fileName: "<FILE_NAME>" }
+   * @see {@link https://docs.lukaz.ai/#delete-file-from-board}
    * @returns true
    */
-  async deleteFile(workspace: string, body: { fileName: string }) {
+
+  // check
+  // it's working but it's returning error 400
+  async deleteFile(boardId: string, body: { fileName: string }) {
     try {
-      const res: AxiosResponse = await this.client.put(
-        `/deleteFile/${workspace}`,
+      const res: AxiosResponse = await this.client.post(
+        `/file/${boardId}`,
         body
       );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
+        return error.response;
       } else {
         console.error(error);
       }
     }
   }
 
+  // PROMPTS
+
   /**
    *
-   * @param workspace workspace id as string
-   * @param body contains audioUrl property
-   * @example example of body {audioUrl: 'https://example.com/Audio.wav'}
-   * @returns transcript of the question
+   * @param boardId board id as string
+   * @param audio contains audioUrl and filePath property
+   * @example {audioUrl: 'https://example.com/Audio.wav', filePath: '<FILE_PATH>'}
+   * @returns transcript of the prompt
    * @example {"transcript": "This is the text from the audio file.}
-   * @see {@link https://docs.lukaz.ai/?javascript#get-question-transcript}
+   * @see {@link https://docs.lukaz.ai/#get-prompt-transcript}
    */
-  async transcript(workspace: string, audio: any) {
+
+  // check later
+  async getTranscript(boardId: string, audio: Transcript) {
     try {
       const res: AxiosResponse = await this.client.post(
-        `/getTranscript/${workspace}`,
+        `/transcript/${boardId}`,
         audio
       );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
+      }
+    }
+  }
+
+  /**
+   * Submits a prompt to a board. On the dev environment, it will return just a test result.
+   * @param boardId - Your board ID as a string.
+   * @param body - An object containing the prompt and translation preferences.
+   * @example example of body = {prompt: 'What is this board about?', translateResult: false}
+   * @returns {Promise<AxiosResponse>} An object
+   * @example return
+   * {
+   *   "result": "This board is about AI.",
+   *   "prompt": "What is this board about?",
+   *   "promptId": "<PROMPT_ID>",
+   *   "sensitive": false
+   * }
+   * @see {@link https://docs.lukaz.ai/#submit-prompt-to-board}
+   */
+
+  // done
+  async prompt(boardId: string, body: PromptBody): Promise<any> {
+    try {
+      const res: AxiosResponse = await this.client.post(
+        `/prompt/${boardId}`,
+        body
+      );
+      return res.data;
+    } catch (error: any) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+        return {
+          error: error.response?.status,
+          errorText: error.response?.statusText,
+        };
+      } else {
+        console.error(error.status);
+        return error.status;
       }
     }
   }
 
   /**
    * Get an url that you can play
-   * @param questionId question id as a string
+   * @param promptId prompt id as a string
    * @returns audioUrl property
-   * @example example of returns {"audioUrl": "https://example.com/Audio.mp3"}
-   * @see {@link https://docs.lukaz.ai/?javascript#get-answer-audio}
+   * @example return {"audioUrl": "https://example.com/Audio.mp3"}
+   * @see {@link https://docs.lukaz.ai/#get-result-audio}
    */
-  async getAudio(questionId: string) {
+
+  // done
+  async getAudio(promptId: string) {
     try {
-      const res: AxiosResponse = await this.client.post(
-        `/getAudio/${questionId}`
-      );
+      const res: AxiosResponse = await this.client.post(`/audio/${promptId}`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -355,22 +410,35 @@ export class Lukaz {
   }
 
   /**
-   * Retrieves all the questions from the workspace
-   * @param workspace workspace id as string
-   * @returns an array of questions
-   * @see {@link https://docs.lukaz.ai/?javascript#get-all-questions}
+   * Retrieves all prompts of a board or made by the user
+   * @param boardId board id as string
+   * @returns an array of objects
+   * @example return
+   * [{
+   *     "audioUrl": "https://example.com/Audio_File.mp3",
+   *     "createdAt": "2023-01-31T18:10:54.376Z",
+   *     "feedback": 0,
+   *     "id": "<PROMPT_ID>",
+   *     "original": "This board is about AI.",
+   *     "prompt": "What is this board about?",
+   *     "result": "An edited prompt result.",
+   *     "sensitive": false,
+   *     "updatedAt": "2023-01-31T18:10:54.376Z",
+   *     "visible": true,
+   *     "boardId": "<BOARD_ID>"
+   *   }]
+   * @see {@link https://docs.lukaz.ai/#get-all-prompts}
    */
-  async getQuestions(workspace: string) {
+
+  // check error 403
+  async getPrompts(boardId: string) {
     try {
-      const res: AxiosResponse = await this.client.get(
-        `/getQuestions/${workspace}`
-      );
+      const res: AxiosResponse = await this.client.get(`/prompt/${boardId}`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -379,34 +447,35 @@ export class Lukaz {
   }
 
   /**
-   * Retrieves one question 
-   * @param questionId The ID of the question to retrieve
+   * Retrieves a prompt.
+   * @param promptId The ID of the prompt to be retrieved
    * @returns an json
-   * @example example of returns {
-  "answer": "This workspace is about AI.",
-  "audioUrl": "https://example.com/Audio.mp3",
-  "createdAt": "2023-01-31T18:10:54.376Z",
-  "feedback": 0,
-  "id": "<QUESTION_ID>",
-  "question": "What is this workspace about?",
-  "sensitive": false,
-  "updatedAt": "2023-01-31T18:10:54.376Z",
-  "visible": true,
-  "workspaceId": "<WORKSPACE_ID>"
-}
-* @see {@link https://docs.lukaz.ai/?javascript#get-question}
-*/
-  async getQuestion(questionId: string) {
+   * @example return
+   * {
+   *     "audioUrl": "https://example.com/Audio_File.mp3",
+   *     "createdAt": "2023-01-31T18:10:54.376Z",
+   *     "feedback": 0,
+   *     "id": "<PROMPT_ID>",
+   *     "original": "This board is about AI.",
+   *     "prompt": "What is this board about?",
+   *     "result": "An edited prompt result.",
+   *     "sensitive": false,
+   *     "updatedAt": "2023-01-31T18:10:54.376Z",
+   *     "visible": true,
+   *     "boardId": "<BOARD_ID>"
+   *   }
+   * @see {@link https://docs.lukaz.ai/#get-prompt}
+   */
+
+  // done
+  async getPrompt(promptId: string) {
     try {
-      const res: AxiosResponse = await this.client.get(
-        `/getQuestion/${questionId}`
-      );
+      const res: AxiosResponse = await this.client.get(`/prompt/${promptId}`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
@@ -415,29 +484,150 @@ export class Lukaz {
   }
 
   /**
-   * Update a specific question
-   * @param questionId question id as string
-   * @param body an object with question and answer properties
-   * @example example of body {feedback: 1, saved: false, visible: true}
+   * Updates some of the prompt's properties.
+   * @param promptId prompt id as string
+   * @param body an object with prompt properties
+   * @example example of body {feedback: 1, saved: false, visible: true, result: 'An edited prompt result.',}
    * @returns true
    */
-  async updateQuestion(questionId: string, body: UpdateQuestion) {
+
+  // done
+  async updatePrompt(promptId: string, body: UpdatePrompt) {
     try {
-      const res: AxiosResponse = await this.client.put(
-        `/updateQuestion/${questionId}`,
+      const res: AxiosResponse = await this.client.post(
+        `/prompt/${promptId}`,
         body
       );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(
-          // @ts-ignore
-          `Request failed, status code: ${error.response.status}, check https://docs.lukaz.ai/?javascript#errors`
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
         );
       } else {
         console.error(error);
       }
     }
   }
+
+  /**
+   * Delete a prompt.
+   * @param promptId prompt id as string
+   * @returns true
+   */
+
+  // done
+  async deletePrompt(promptId: string) {
+    try {
+      const res: AxiosResponse = await this.client.post(`/prompt/${promptId}`, {
+        deleted: true,
+      });
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+
+  // Instructions
+  /**
+   * Creates a new instruction for the user.
+   * @param body
+   * @example body 
+   * {
+    contextDescription: 'Product name - tagline',
+    contextSample: 'KatKlinik - Purrfect Care at Your Pawtips',
+    includeDocs: false,
+    qty: 4,
+    resultDescription: 'Short social media post with emojis',
+    resultSample: '😻 Can\'t get enough of cute cats? Follow our page for daily dose of furry purr-fection that will melt your heart! 🐈💕'
+}
+   * @returns a json
+   * @example return {"instructionId": "<INSTRUCTION_ID>"}
+   */
+  async createInsrruction(body: CreateInstruction) {
+    try {
+      const res: AxiosResponse = await this.client.post(`/instruction/`, body);
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+  async getInstruction(instructionId) {
+    try {
+      const res: AxiosResponse = await this.client.get(
+        `/instruction/${instructionId}`
+      );
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+  async getInstructions(param) {
+    try {
+      const res: AxiosResponse = await this.client.post(
+        `/instruction/${param}`
+      );
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+  async updateInstruction(instructionId) {
+    try {
+      const res: AxiosResponse = await this.client.post(
+        `/instruction/${instructionId}`
+      );
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+  async deleteInstruction(instructionId) {
+    try {
+      const res: AxiosResponse = await this.client.post(
+        `/instruction/${instructionId}`
+      );
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+
   //end of class
 }
