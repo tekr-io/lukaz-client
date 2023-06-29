@@ -51,7 +51,7 @@ export interface UpdatePrompt {
   result?: string;
 }
 
-export interface CreateInstruction {
+export interface Instruction {
   contextDescription: string;
   contextSample: string;
   includeDocs: boolean;

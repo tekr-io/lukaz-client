@@ -6,7 +6,7 @@ import axios, {
 } from 'axios';
 import {
   CreateBoard,
-  CreateInstruction,
+  Instruction,
   PromptBody,
   Transcript,
   UpdateBoard,
@@ -430,8 +430,8 @@ export class Lukaz {
    * @see {@link https://docs.lukaz.ai/#get-all-prompts}
    */
 
-  // check error 403
-  async getPrompts(boardId: string) {
+  // check error 403, if no argument returns all prompts for the user
+  async getPrompts(boardId?: string) {
     try {
       const res: AxiosResponse = await this.client.get(`/prompt/${boardId}`);
       return res.data;
@@ -534,23 +534,25 @@ export class Lukaz {
     }
   }
 
-  // Instructions
+  // INSTRUCTIONS
+
   /**
    * Creates a new instruction for the user.
    * @param body
-   * @example body 
+   * @example body
    * {
-    contextDescription: 'Product name - tagline',
-    contextSample: 'KatKlinik - Purrfect Care at Your Pawtips',
-    includeDocs: false,
-    qty: 4,
-    resultDescription: 'Short social media post with emojis',
-    resultSample: '😻 Can\'t get enough of cute cats? Follow our page for daily dose of furry purr-fection that will melt your heart! 🐈💕'
-}
+   * contextDescription: 'Product name - tagline',
+   * contextSample: 'KatKlinik - Purrfect Care at Your Pawtips',
+   * includeDocs: false,
+   * qty: 4,
+   * resultDescription: 'Short social media post with emojis',
+   * resultSample: '😻 Can\'t get enough of cute cats? Follow our page for daily dose of furry purr-fection that will melt your heart! 🐈💕'}
    * @returns a json
    * @example return {"instructionId": "<INSTRUCTION_ID>"}
    */
-  async createInsrruction(body: CreateInstruction) {
+
+  // done
+  async createInsrruction(body: Instruction) {
     try {
       const res: AxiosResponse = await this.client.post(`/instruction/`, body);
       return res.data;
@@ -564,7 +566,22 @@ export class Lukaz {
       }
     }
   }
-  async getInstruction(instructionId) {
+  /**
+   * Retrieves an instruction
+   * @param instructionId Instruction id as string
+   * @returns an JSON
+   * @example return
+   * {"contextDescription": "Product name - tagline",
+   * "contextSample": "KatKlinik - Purrfect Care at Your Pawtips",
+   * "id": "<INSTRUCTION_ID>",
+   * "includeDocs": false,
+   * "qty": 4,
+   * "resultDescription": "Short social media post with emojis",
+   * "resultSample": "😻 Cant get enough of cute cats? Follow our page for daily dose of furry purr-fection that will melt your heart! 🐈💕" }
+   */
+
+  // done
+  async getInstruction(instructionId: string) {
     try {
       const res: AxiosResponse = await this.client.get(
         `/instruction/${instructionId}`
@@ -580,10 +597,60 @@ export class Lukaz {
       }
     }
   }
-  async getInstructions(param) {
+
+  /**
+   * retrieves all instructions created by the user.
+   * @returns an array of objects
+   * @example return
+   * [{
+   * "contextDescription": "Product name - tagline",
+   * "contextSample": "KatKlinik - Purrfect Care at Your Pawtips",
+   * "id": "<INSTRUCTION_ID>",
+   * "includeDocs": false,
+   * "qty": 4,
+   * "resultDescription": "Short social media post with emojis",
+   * "resultSample": "😻 Cant get enough of cute cats? Follow our page for daily dose of furry purr-fection that will melt your heart! 🐈💕"
+   * }]
+   */
+
+  // done
+  async getInstructions() {
+    try {
+      const res: AxiosResponse = await this.client.get(`/instruction/`);
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+
+  /**
+   * Updates some of the instruction's properties.
+   * @param instructionId instruction id as string
+   * @param body
+   * @example of body
+   * {
+   * contextDescription: 'Product name - tagline',
+   * contextSample: 'KatKlinik - Purrfect Care at Your Pawtips',
+   * includeDocs: false,
+   * qty: 4,
+   * resultDescription: 'Short social media post with emojis',
+   * resultSample: '😻 Can\'t get enough of cute cats? Follow our page for daily dose of furry purr-fection that will melt your heart! 🐈💕'
+   * }
+   * @returns true
+   */
+
+  // done
+  async updateInstruction(instructionId: string, body: Instruction) {
     try {
       const res: AxiosResponse = await this.client.post(
-        `/instruction/${param}`
+        `/instruction/${instructionId}`,
+        body
       );
       return res.data;
     } catch (error) {
@@ -596,26 +663,19 @@ export class Lukaz {
       }
     }
   }
-  async updateInstruction(instructionId) {
+
+  /**
+   * Deletes an instruction.
+   * @param instructionId instruction as string
+   * @returns true
+   */
+
+  // check returning error 400
+  async deleteInstruction(instructionId: string) {
     try {
       const res: AxiosResponse = await this.client.post(
-        `/instruction/${instructionId}`
-      );
-      return res.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.error(
-          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
-        );
-      } else {
-        console.error(error);
-      }
-    }
-  }
-  async deleteInstruction(instructionId) {
-    try {
-      const res: AxiosResponse = await this.client.post(
-        `/instruction/${instructionId}`
+        `/instruction/${instructionId}`,
+        { deleted: true }
       );
       return res.data;
     } catch (error) {
