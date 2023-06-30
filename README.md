@@ -29,12 +29,10 @@ import client from '@lukaz/client';
 const lukaz = new client('<API_KEY>');
 
 async function main() {
-  const question = {
-    question: 'what is inside this workspace?',
-    translateAnswer: false,
-  };
-
-  const data = await lukaz.ask('<Workspace_Id>', question);
+  const data = await lukaz.prompt('<BOARD_ID>', {
+    prompt: 'What is this board about?',
+    translateResult: false,
+  });
   return data;
 }
 ```
