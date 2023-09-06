@@ -84,7 +84,7 @@ export class Lukaz {
    */
   async getUser() {
     try {
-      const res: AxiosResponse = await this.client.post(`/getUser/`);
+      const res: AxiosResponse = await this.client.get(`/user/`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
