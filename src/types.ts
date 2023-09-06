@@ -1,15 +1,16 @@
-export interface PromptBody {
-  prompt: string;
-  translateResult: boolean;
-  // check later
+export interface SubmitPrompt {
   contextDescription?: string;
   contextSample?: string;
-  general?: string;
+  editId?: string;
   includeDocs?: string;
+  includeResults?: string;
   language?: string;
   qty?: string;
+  prompt: string;
   resultDescription?: string;
   resultSample?: string;
+  sessionId?: string;
+  translateResult?: boolean;
 }
 
 export interface CreateBoard {
@@ -52,9 +53,10 @@ export interface UpdatePrompt {
 }
 
 export interface Instruction {
-  contextDescription: string;
   contextSample: string;
+  edit: boolean;
   includeDocs: boolean;
+  language: string;
   qty: number;
   resultDescription: string;
   resultSample: string;
