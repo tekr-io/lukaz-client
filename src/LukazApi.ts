@@ -102,6 +102,7 @@ export class Lukaz {
 
   // BOARDS
 
+  // @ts-ignore
   /**
    * Get All Boards
    *
@@ -387,7 +388,7 @@ export class Lukaz {
    *
    * @param {string} boardId - The ID of the board to submit a prompt
    * @param {SubmitPrompt} promptData - Prompt options
-   * @example request body {"prompt": "What is this board about?", "includeDocs": true, "includeResults": true}
+   * @example request body {"prompt": "What is this board about?", {"instruction": {"includeDocs": true, "includeResults": true}}
    * @example response body
    * [{
    *   "result": "This board is about AI.",

@@ -1,14 +1,7 @@
 export interface SubmitPrompt {
-  contextDescription?: string;
-  contextSample?: string;
-  editId?: string;
-  includeDocs?: string;
-  includeResults?: string;
-  language?: string;
-  qty?: string;
+  instruction?: Instruction;
+  model?: 'gpt-3' | 'gpt-4';
   prompt: string;
-  resultDescription?: string;
-  resultSample?: string;
   sessionId?: string;
   translateResult?: boolean;
 }
@@ -17,11 +10,11 @@ export interface CreateBoard {
   description?: string;
   title: string;
   options?: {
-    docs: boolean;
-    free: boolean;
-    prompt: boolean;
-    public: boolean;
-    upload: boolean;
+    docs?: boolean;
+    free?: boolean;
+    prompt?: boolean;
+    public?: boolean;
+    upload?: boolean;
   };
 }
 
@@ -53,11 +46,13 @@ export interface UpdatePrompt {
 }
 
 export interface Instruction {
-  contextSample: string;
-  edit: boolean;
-  includeDocs: boolean;
-  language: string;
-  qty: number;
-  resultDescription: string;
-  resultSample: string;
+  contextSample?: string;
+  edit?: boolean;
+  editId?: boolean;
+  includeDocs?: boolean;
+  includeResults?: boolean;
+  language?: string;
+  qty?: number;
+  resultDescription?: string;
+  resultSample?: string;
 }
