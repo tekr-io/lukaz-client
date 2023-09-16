@@ -15,8 +15,20 @@ import {
 
 export class Lukaz {
   private client: AxiosInstance;
-  constructor(apiKey: string, mode?: 'dev' | 'prod' | null | undefined) {
-    if (mode === 'dev') {
+  constructor(apiKey: string, mode?: 'stage' | 'dev' | 'prod' | null | undefined) {
+    if (mode === 'stage') {
+      this.client = axios.create({
+        baseURL: 'https://europe-west1-lukaz-stage.cloudfunctions.net',
+        headers: {
+          'x-api-key': apiKey,
+        },
+      });
+      console.log(
+        'You are using %cStage mode!',
+        'background-color: red'
+      );
+    }
+    else if (mode === 'dev') {
       this.client = axios.create({
         baseURL: 'https://europe-west1-lukaz-dev.cloudfunctions.net',
         headers: {
@@ -24,7 +36,7 @@ export class Lukaz {
         },
       });
       console.log(
-        'You are using %cDevelopment mode!',
+        'You are using %cdevelopment mode!',
         'background-color: green'
       );
     } else {
