@@ -501,6 +501,7 @@ export class Lukaz {
    *
    * This endpoint retrieves a prompt.
 
+   * @param {string} boardId
    * @param {string} promptId - The ID of the prompt to retrieve
    * @example response body
    * {
@@ -515,12 +516,12 @@ export class Lukaz {
    *   "updatedAt": "2023-01-31T18:10:54.376Z",
    *   "visible": true,
    *   "boardId": "<BOARD_ID>"
- *   }
+   *   }
    * @see {@link https://docs.lukaz.ai/#get-prompt}
    */
-  async getPrompt(promptId: string) {
+  async getPrompt(boardId: string, promptId: string) {
     try {
-      const res: AxiosResponse = await this.client.get(`/prompt/${promptId}`);
+      const res: AxiosResponse = await this.client.get(`/prompt/${boardId}/${promptId}`);
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {

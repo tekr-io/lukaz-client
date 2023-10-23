@@ -1,6 +1,6 @@
 export interface SubmitPrompt {
   instruction?: Instruction;
-  model?: 'gpt-3' | 'gpt-4';
+  model?: string;
   prompt: string;
   sessionId?: string;
   translateResult?: boolean;
