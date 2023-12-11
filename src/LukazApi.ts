@@ -5,7 +5,8 @@ import axios, {
   isAxiosError,
 } from 'axios';
 import {
-  CreateBoard,
+  AudioOptions,
+  CreateBoard, ExportOptions,
   Instruction,
   SubmitPrompt,
   Transcript,
@@ -46,36 +47,6 @@ export class Lukaz {
           'x-api-key': apiKey,
         },
       });
-    }
-  }
-
-  // AUTH Guest Session for Landing Page
-
-  /**
-   * Create a Guest Account for a new user
-   *
-   * @returns
-   * @example
-   * { "sessionId": "<USER_ID>" }
-   */
-
-  // done
-  async createGuest() {
-    try {
-      const res: AxiosResponse = await this.client.post(`/startSession/`);
-      return res.data;
-    } catch (error: any) {
-      if (isAxiosError(error)) {
-        console.error(
-          `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
-        );
-        return {
-          error: error.response?.status,
-          errorText: error.response?.statusText,
-        };
-      } else {
-        console.error(error.status);
-      }
     }
   }
 
@@ -128,7 +99,7 @@ export class Lukaz {
    *     "documents": [{ "createdAt": "2023-01-31T18:10:54.376Z", "extension": "pdf", "name": "Text_File.pdf", "processed": true, "url": "https://example.com/Text_File.pdf" }],
    *     "id": "<BOARD_ID>",
    *     "ownerEmail": "owner@example.com",
-   *     "options": { "prompt": true, "docs": false, "free": false, "public": false, "upload": true },
+   *     "options": {"behavior": "Content generator", "docs": false, "free": false, "prompt": true, "public": false, "upload": true, "voice": "onyx"},
    *     "roles": { "owner@example.com": 5, "user@example.com": 4 },
    *     "stats": { "docs": 2, "prompts": 7, "results": 5},
    *     "updatedAt": "2023-01-31T18:10:54.376Z"
@@ -163,7 +134,7 @@ export class Lukaz {
    *   "documents": [{ "createdAt": "2023-01-31T18:10:54.376Z", "extension": "pdf", "name": "Text_File.pdf", "processed": true, "url": "https://example.com/Text_File.pdf" }],
    *   "id": "<BOARD_ID>",
    *   "ownerEmail": "owner@example.com",
-   *   "options": { "docs": false, "free": false, "prompt": true, "public": false, "upload": true },
+   *   "options": {"behavior": "Content generator", "docs": false, "free": false, "prompt": true, "public": false, "upload": true, "voice": "onyx"},
    *   "roles": { "owner@example.com": 5, "user@example.com": 4 },
    *   "stats": { "docs": 2, "prompts": 7, "results": 5 },
    *   "title": "My AI Board",
@@ -198,7 +169,7 @@ export class Lukaz {
    * {
    *   "description": "My custom AI board.",
    *   "title": "My AI board",
-   *   "options": {"docs": false, "free": false, "prompt": true, "public": false, "upload": true}
+   *   "options": {"behavior": "Content generator", "docs": false, "free": false, "prompt": true, "public": false, "upload": true, "voice": "onyx"},
    * }
    * @example response body
    * {
@@ -232,13 +203,7 @@ export class Lukaz {
    * {
    *   "description": "My custom AI board.",
    *   "notify": true,
-   *   "options": {
-   *     "docs": true,
-   *     "free": false,
-   *     "public": false,
-   *     "prompt": true,
-   *     "upload": true
-   *   },
+   *   "options": {"behavior": "Content generator", "docs": false, "free": false, "prompt": true, "public": false, "upload": true, "voice": "onyx"},
    *   "roles": {
    *     "user@example.com": 2
    *   },
@@ -301,11 +266,10 @@ export class Lukaz {
    * Max file size: 50MB
    *
    * @param {string} boardId - The ID of the board to upload the file
-   * @param {filePath: string} fileData - Path of a local text file to upload
+   * @param {object} fileData - Path of a local text file to upload
    * @returns true
    * @see {@link https://docs.lukaz.ai/#upload-file-onto-board}
    */
-  // check - NOT WORKING YET
   async uploadFile(boardId: string, fileData: {filePath: string}) {
     try {
       const res: AxiosResponse = await this.client.post(
@@ -335,8 +299,6 @@ export class Lukaz {
    * @see {@link https://docs.lukaz.ai/#delete-file-from-board}
    * @returns true
    */
-  // check
-  // it's working but it's returning error 400
   async deleteFile(boardId: string, fileData: { fileName: string }) {
     try {
       const res: AxiosResponse = await this.client.post(
@@ -355,6 +317,39 @@ export class Lukaz {
       }
     }
   }
+
+
+
+  /**
+   * Download Prompts from Board
+   *
+   * This endpoint exports the board's prompts.
+   *
+   * Supported formats: pdf, docx
+   *
+   * @param {string} boardId - The ID of the board to download the prompts
+   * @param {ExportOptions} exportOptions - Options for exporting the prompts
+   * @returns true
+   * @see {@link https://docs.lukaz.ai/#upload-file-onto-board}
+   */
+  async download(boardId: string, exportOptions: ExportOptions) {
+    try {
+      const res: AxiosResponse = await this.client.post(
+          `/download/${boardId}`,
+          exportOptions
+      );
+      return res.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error(
+            `Request failed, status code: ${error.response?.status}, check https://docs.lukaz.ai/?javascript#errors`
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  }
+
 
   // PROMPTS
 
@@ -439,12 +434,16 @@ export class Lukaz {
    * This endpoint generates an audio file from the prompt's result.
    *
    * @param {string} promptId - The ID of the prompt to generate the audio
+   * @param {AudioOptions} audioOptions - The options for generating the audio
    * @example response body {"audioUrl": "https://example.com/Audio.mp3"}
    * @see {@link https://docs.lukaz.ai/#get-result-audio}
    */
-  async getAudio(promptId: string) {
+  async getAudio(promptId: string, audioOptions?: AudioOptions) {
     try {
-      const res: AxiosResponse = await this.client.post(`/audio/${promptId}`);
+      const res: AxiosResponse = await this.client.post(
+          `/audio/${promptId}`,
+          audioOptions
+      );
       return res.data;
     } catch (error) {
       if (isAxiosError(error)) {
@@ -461,6 +460,7 @@ export class Lukaz {
    * Get All Prompts
    *
    * This endpoint retrieves all prompts of a board or made by the user.
+   *
    * See GET prompt for a detailed description of a prompt structure.
    *
    * @param {string} boardId - If <BOARD_ID> is not provided, then the prompts made by the user are retrieved.
@@ -591,13 +591,12 @@ export class Lukaz {
 
   /**
    * Create Instruction
+   *
    * This endpoint creates a new instruction for the user.
    *
    * @param {Instruction} instructionData - The data of the instruction to create
    * @example request body
    * {
-   *   "contextDescription": "Product name - tagline",
-   *   "contextSample": "KatKlinik - Purrfect Care at Your Pawtips",
    *   "includeDocs": false,
    *   "qty": 4,
    *   "resultDescription": "Short social media post with emojis",
@@ -628,8 +627,6 @@ export class Lukaz {
    * @param {string} instructionId - The ID of the instruction to retrieve
    * @example response body
    * {
-   *   "contextDescription": "Product name - tagline",
-   *   "contextSample": "KatKlinik - Purrfect Care at Your Pawtips",
    *   "id": "<INSTRUCTION_ID>",
    *   "includeDocs": false,
    *   "qty": 4,
@@ -658,12 +655,11 @@ export class Lukaz {
    * Get All Instructions
    *
    * This endpoint retrieves all instructions created by the user.
+   *
    * See GET instruction for a detailed description of a instruction structure.
    *
    * @example response body
    * [{
-   *   "contextDescription": "Product name - tagline",
-   *   "contextSample": "KatKlinik - Purrfect Care at Your Pawtips",
    *   "id": "<INSTRUCTION_ID>",
    *   "includeDocs": false,
    *   "qty": 4,
@@ -695,8 +691,6 @@ export class Lukaz {
    * @param {Instruction} instructionData - Data to update
    * @example request body
    * {
-   *   "contextDescription": "Product name - tagline",
-   *   "contextSample": "KatKlinik - Purrfect Care at Your Pawtips",
    *   "includeDocs": false,
    *   "qty": 4,
    *   "resultDescription": "Short social media post with emojis",
@@ -730,7 +724,6 @@ export class Lukaz {
    * @param {string} instructionId - The ID of the instruction to delete
    * @returns true
    */
-  // check returning error 400
   async deleteInstruction(instructionId: string) {
     try {
       const res: AxiosResponse = await this.client.post(

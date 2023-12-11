@@ -9,25 +9,13 @@ export interface SubmitPrompt {
 export interface CreateBoard {
   description?: string;
   title: string;
-  options?: {
-    docs?: boolean;
-    free?: boolean;
-    prompt?: boolean;
-    public?: boolean;
-    upload?: boolean;
-  };
+  options?: BoardOptions;
 }
 
 export interface UpdateBoard {
   description?: string;
   notify?: boolean;
-  options?: {
-    docs?: boolean;
-    free?: boolean;
-    public?: boolean;
-    prompt?: boolean;
-    upload?: boolean;
-  };
+  options?: BoardOptions;
   roles?: {
     [email: string]: number;
   };
@@ -46,7 +34,6 @@ export interface UpdatePrompt {
 }
 
 export interface Instruction {
-  contextSample?: string;
   edit?: boolean;
   editId?: boolean;
   includeDocs?: boolean;
@@ -56,3 +43,28 @@ export interface Instruction {
   resultDescription?: string;
   resultSample?: string;
 }
+
+export interface BoardOptions {
+  behavior?: string;
+  docs?: boolean;
+  free?: boolean;
+  prompt?: boolean;
+  public?: boolean;
+  upload?: boolean;
+  voice?: VoiceOptions;
+}
+
+export interface ExportOptions {
+  format?: DownloadFormats;
+  includePrompts?: boolean;
+  order?: 'asc' | 'desc';
+}
+
+export interface AudioOptions {
+  format?: AudioFormats;
+  voice?: VoiceOptions;
+}
+
+export type VoiceOptions = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'schimmer';
+export type DownloadFormats = 'pdf' | 'docx';
+export type AudioFormats = 'mp3' | 'opus' | 'aac' | 'flac';
